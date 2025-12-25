@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import json
 import os
+import sys
 from dotenv import load_dotenv
 from typing import Dict, Optional
 
@@ -91,7 +92,7 @@ class StickyBot(commands.Bot):
             # Check if we need to repost the sticky message
             if channel_data['message_count'] >= channel_data['msg_limit']:
                 # Delete old sticky message if it exists
-                if channel_data['last_message_id']:
+                if channel_data['last_message_id'] is not None:
                     try:
                         old_message = await message.channel.fetch_message(channel_data['last_message_id'])
                         await old_message.delete()
@@ -162,7 +163,7 @@ async def unstick(interaction: discord.Interaction):
         return
     
     # Delete the last sticky message if it exists
-    if bot.sticky_data[channel_id]['last_message_id']:
+    if bot.sticky_data[channel_id]['last_message_id'] is not None:
         try:
             message = await interaction.channel.fetch_message(
                 bot.sticky_data[channel_id]['last_message_id']
@@ -219,6 +220,6 @@ if __name__ == "__main__":
     if not TOKEN:
         print("Error: DISCORD_BOT_TOKEN not found in environment variables!")
         print("Please create a .env file with your bot token.")
-        exit(1)
+        sys.exit(1)
     
     bot.run(TOKEN)
